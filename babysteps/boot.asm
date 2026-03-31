@@ -3,29 +3,56 @@ bits 16
 
 loader:
   cli
+
+  ;; seg init
   xor ax, ax
   mov ds, ax
   mov es, ax
   mov sp, ax
-  mov sp, 0x9000
-  mov bp, 0x9000
+  mov ss, ax            ;; 0x7c00 * 16 = 0x7c00 <- where we want the ss to be placed
+
+  ;; sp init
+  mov ax, 0x7c00        ;; 2-KB stack
+  mov sp, ax
+  mov bp, sp
+
   sti
 
   ;; for debugging
-  mov ax, 0xdead
-  mov bx, 0xbeef
-  push ax
-  push bx
-  pop ax
-  pop bx
-  ;;
+  ;; mov ax, 0xdead
+  ;; mov bx, 0xbeef
+  ;; push ax
+  ;; push bx
+  ;; pop ax
+  ;; pop bx
 
   cld
   mov si, msg
   call bios_print
+  call load_stage_two
+  jmp 0x8000
 
-.hang:
-  jmp .hang
+load_stage_two:
+  xor ax, ax               ;; zero out es cus,
+  mov es, ax               ;; abs = (seg * 16) + offset
+  mov ah, 0x02             ;; read sectors
+  mov al, 0x01             ;; number of sectors to read
+  mov ch, 0x00             ;; cylinder number
+  mov cl, 0x02             ;; sector number to read
+  mov dh, 0x00             ;; head number
+  mov dl, 0x00             ;; 0x81 to read from hard drive, 0x00 for the floppy
+  mov bx, 0x8000           ;; location we want to load the data
+  int 0x13
+  jc disk_err
+  ret
+
+disk_err:
+  mov si, loaderr
+  call bios_print
+  cli
+  hlt
+  jmp $
+
 
 bios_print:
   lodsb
@@ -39,7 +66,8 @@ bios_print:
 .done:
   ret
 
-msg: db "hello from this side", 0xd, 0xa, 0
+msg: db "[i] successfully loaded the bootloader", 0xd, 0xa, 0
+loaderr: db "[-] failed loading the code from disk", 0x0d, 0x0a, 0
 
 times 510 - ($ - $$) db 0
 dw 0xaa55
