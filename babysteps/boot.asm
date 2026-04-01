@@ -32,7 +32,10 @@ load_stage_two:
   mov ch, 0x00             ;; cylinder number
   mov cl, 0x02             ;; sector number to read
   mov dh, 0x00             ;; head number
-  mov dl, 0x00             ;; 0x81 to read from hard drive, 0x00 for the floppy
+  ;; let the BIOS to decide where to read from
+  ;; BIOS sets the dl to the id of the bootable hard drive
+  ;; after the bootloader is loaded into the memory
+  mov dl, 0x00             ;; 0x81/0x80 to read from hard drive, 0x00 for the floppy
   mov bx, 0x8000           ;; location we want to load the data (offset to absaddr formula)
   int 0x13
   jc disk_err
@@ -45,18 +48,7 @@ disk_err:
   hlt
   jmp $
 
-
-bios_print:
-  lodsb
-  or al, al
-  jz .done
-
-  mov ah, 0x0e
-  mov bh, 0
-  int 0x10
-  jmp bios_print
-.done:
-  ret
+%include "bios_print.inc"
 
 msg: db "[i] successfully loaded the bootloader", 0xd, 0xa, 0
 loaderr: db "[-] failed loading the code from disk", 0x0d, 0x0a, 0
