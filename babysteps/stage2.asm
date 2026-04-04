@@ -44,7 +44,7 @@ pm_entry:
   mov gs, ax
   mov ss, ax
 
-  mov esp, 0x9000     ; smash this dear hacker ayye :)
+  mov esp, 0x9000
 
   extern kmain
   call kmain
