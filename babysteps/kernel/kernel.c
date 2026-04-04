@@ -92,7 +92,7 @@ void term_write(const char* s, size_t size) {
 
 void term_writestr(const char* s) { term_write(s, strlen(s)); }
 
-void kernel_main(void) {
+void kmain(void) {
   term_init();
   term_writestr("LOL IM NOOB THO :D\n");
 }

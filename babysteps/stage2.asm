@@ -46,8 +46,8 @@ pm_entry:
 
   mov esp, 0x9000     ; smash this dear hacker ayye :)
 
-  extern kernel_main
-  call kernel_main
+  extern kmain
+  call kmain
 
   ; if kernel returns, halt (probably won't, idfk)
   cli
