@@ -1,5 +1,8 @@
 bits 16
-[ORG 0x8000]
+; [ORG 0x8000]
+
+section .text
+global stage2_entry
 
 stage2_entry:
   mov si, msg_load_succ
@@ -41,22 +44,26 @@ pm_entry:
   mov gs, ax
   mov ss, ax
 
-  mov ebx, msg_info_prot2
-  call pm_print
+  mov esp, 0x9000     ; smash this dear hacker ayye :)
 
+  extern kernel_main
+  call kernel_main
+
+  ; if kernel returns, halt (probably won't, idfk)
   cli
 
 .halt:
   hlt
   jmp .halt
 
-
 %include "include/bios_print.inc"
 %include "include/a20.inc"
 %include "include/gdt.inc"
-%include "include/pm_print.inc"
+; %include "include/pm_print.inc"
+; %include "include/vga.inc"
 
 msg_load_succ: db "[+] successfully loaded stage 2", 0x0d, 0x0a, 0
 msg_a20_enable_succ: db "[+] A20 is now enabled", 0x0d, 0x0a, 0
 msg_info_prot1: db "[+] trying to get into protected mode", 0x0d, 0x0a, 0
 msg_info_prot2: db "[+] successfully landed on protected mode =)", 0
+msg_info_vga: db "[+] successfully loaded the vga drivers", 0x0a, 0

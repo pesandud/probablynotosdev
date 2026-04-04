@@ -33,14 +33,14 @@ load_stage_two:
   xor ax, ax               ;; zero out es cus,
   mov es, ax               ;; absaddr = (seg * 16) + offset
   mov ah, 0x02             ;; read sectors
-  mov al, 0x01             ;; number of sectors to read
+  mov al, 0x10             ;; number of sectors to read - 16 for safe lol
   mov ch, 0x00             ;; cylinder number
   mov cl, 0x02             ;; sector number to read
   mov dh, 0x00             ;; head number
   ;; let the BIOS to decide where to read from
   ;; BIOS sets the dl to the id of the bootable hard drive
   ;; after the bootloader is loaded into the memory
-  mov dl, 0x00             ;; 0x81/0x80 to read from hard drive, 0x00 for the floppy
+  ;; mov dl, 0x00             ;; 0x81/0x80 to read from hard drive, 0x00 for the floppy
   mov bx, 0x8000           ;; location we want to load the data (offset to absaddr formula)
   int 0x13
   jc disk_err
