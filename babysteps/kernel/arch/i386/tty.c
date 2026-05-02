@@ -14,15 +14,15 @@ typedef unsigned char uchar;
 
 size_t term_row, term_col;
 u8 term_clr;
-u16* term_buf = (u16*)VGA_MEMORY;
+u16 *term_buf = (u16 *)VGA_MEMORY;
 
 void term_init(void);
 void term_setclr(u8 clr);
 void term_scroll(void);
 void term_putentryat(uchar c, u8 clr, size_t x, size_t y);
 void term_putchar(uchar c);
-void term_write(const char* s, size_t size);
-void term_writestr(const char* s);
+void term_write(const char *s, size_t size);
+void term_writestr(const char *s);
 void term_clear();
 
 void term_init(void) {
@@ -65,7 +65,8 @@ void term_putentryat(uchar c, u8 clr, size_t x, size_t y) {
 void term_putchar(uchar c) {
   if (c == '\n') {
     term_col = 0;
-    if (++term_row >= VGA_HEIGHT) term_scroll();
+    if (++term_row >= VGA_HEIGHT)
+      term_scroll();
     return;
   }
 
@@ -79,7 +80,8 @@ void term_putchar(uchar c) {
 
   if (c == '\t') {
     term_col = (term_col + 4) & ~3;
-    if (term_col >= VGA_WIDTH) term_scroll();
+    if (term_col >= VGA_WIDTH)
+      term_scroll();
     return;
   }
 
@@ -93,13 +95,13 @@ void term_putchar(uchar c) {
   }
 }
 
-void term_write(const char* s, size_t size) {
+void term_write(const char *s, size_t size) {
   for (size_t i = 0; i < size; i++) {
     term_putchar(s[i]);
   }
 }
 
-void term_writestr(const char* s) { term_write(s, strlen(s)); }
+void term_writestr(const char *s) { term_write(s, strlen(s)); }
 
 void term_clear(void) {
   // clear the screen

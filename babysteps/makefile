@@ -28,6 +28,12 @@ bin/arch_tty.o: kernel/arch/i386/tty.c kernel/include/kernel/tty.h
 bin/gdt.o: kernel/arch/i386/gdt.c kernel/include/kernel/gdt.h
 	$(CC) -c kernel/arch/i386/gdt.c -o bin/gdt.o $(CFLAGS)
 
+bin/idt.o: kernel/arch/i386/idt.c kernel/include/kernel/idt.h
+	$(CC) -c kernel/arch/i386/idt.c -o bin/idt.o $(CFLAGS)
+
+bin/idt_asm.o: kernel/arch/i386/idt.asm
+	$(NASM) $(NASMFLAGS_ELF) kernel/arch/i386/idt.asm -o bin/idt_asm.o
+
 bin/gdt_asm.o: kernel/arch/i386/gdt.asm
 	$(NASM) $(NASMFLAGS_ELF) kernel/arch/i386/gdt.asm -o bin/gdt_asm.o
 
@@ -42,9 +48,9 @@ bin/string.o: kernel/src/libc/string.c kernel/include/string.h
 	$(CC) -c kernel/src/libc/string.c -o bin/string.o $(CFLAGS)
 
 ###########################################################
-bin/stage2.bin: bin/stage2.o bin/kernel.o bin/arch_tty.o bin/gdt_asm.o bin/gdt.o bin/memcpy.o bin/memset.o bin/string.o
+bin/stage2.bin: bin/stage2.o bin/kernel.o bin/arch_tty.o bin/gdt_asm.o bin/gdt.o bin/idt_asm.o bin/idt.o bin/memcpy.o bin/memset.o bin/string.o
 	$(LD) $(LDFLAGS) -o bin/stage2.bin \
-	bin/stage2.o bin/kernel.o bin/arch_tty.o bin/gdt.o bin/gdt_asm.o bin/memcpy.o bin/memset.o bin/string.o
+	bin/stage2.o bin/kernel.o bin/arch_tty.o bin/gdt.o bin/gdt_asm.o bin/idt.o bin/idt_asm.o bin/memcpy.o bin/memset.o bin/string.o
 
 bin/image.bin: bin/boot.bin bin/stage2.bin
 	cat bin/boot.bin bin/stage2.bin > bin/image.bin

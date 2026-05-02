@@ -3,8 +3,16 @@
 
 /* Fundamental types */
 typedef int ptrdiff_t;
-typedef unsigned int size_t;
+// typedef unsigned int size_t;
 typedef unsigned short wchar_t;
+
+#if __SIZEOF_POINTER__ == 8
+	typedef unsigned long long size_t;
+	typedef unsigned long long uintptr_t;
+#elif __SIZEOF_POINTER__ == 4
+	typedef unsigned int size_t;
+	typedef unsigned int uintptr_t;
+#endif
 
 /* Null pointer */
 #ifndef NULL
