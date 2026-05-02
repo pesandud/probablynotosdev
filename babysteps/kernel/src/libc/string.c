@@ -7,7 +7,7 @@ size_t strlen(const char *s) {
 
 char *strcpy(char *dst, char *src) {
   if (dst == NULL || src == NULL)
-    return;
+    return NULL;
   char *tmp = dst;
   while (*dst++ = *src++)
     ;
@@ -16,11 +16,18 @@ char *strcpy(char *dst, char *src) {
 
 char *strncpy(char *dst, char *src, size_t n) {
   if (dst == NULL || src == NULL)
-    return;
+    return NULL;
   char *tmp = dst;
-  while (n) {
+  while (n > 0 && *src != '\0') {
     *dst++ = *src++;
+		n--;
   }
+
+	// if n > length of src, pad the rest with \0
+	while (n > 0) {
+		*dst++ = '\0';
+		n--;
+	}
   return tmp;
 }
 
